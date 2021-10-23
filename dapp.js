@@ -57,8 +57,12 @@ mmEnable.onclick = async () => {
     mmCurrentAccount.innerHTML = "Here is your Current Account: " + ethereum.selectedAddress
 }
 
+//instantiate web3
+var web3 = new Web3(window.ethereum); 
+const simpleStorage = new web3.eth.Contract(
+	ssABI, ssAddress)
 
-
+simpleStorage.setProvider(window.ethereum)
 
 const ssSubmit = document.getElementById('ss-input-button');
 
@@ -66,23 +70,25 @@ ssSubmit.onclick = async () => {
     const ssValue = document.getElementById('ss-input-box').value;
     console.log(ssValue);
 
-    //instantiate web3
-    var web3 = new Web3(window.ethereum); 
-
-    const simpleStorage = new web3.eth.Contract(
-        ssABI, ssAddress)
-    
-
-    simpleStorage.setProvider(window.ethereum)
-
     //next we interact with the ABI contract which has two functions
     // It has store and retrieve. This is where web2 and web3 interact
 
     await simpleStorage.methods.store(ssValue).send({from:ethereum.selectedAddress})
 
-
 }
 
+const ssGetValue = document.getElementById('ss-get-value');
+const ssDisplayValue = document.getElementById('ss-display-value');
+
+ssGetValue.onclick = async () => {
+	console.log('I click the call button.') 
+	var value = await simpleStorage.methods.retrieve().call()
+	console.log(value)
+
+	ssDisplayValue.innerHTML = "Current Simple Storage Value: " + value;
+
+
+} 
 
 
 
